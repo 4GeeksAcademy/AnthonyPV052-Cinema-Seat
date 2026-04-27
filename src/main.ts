@@ -97,14 +97,52 @@ function findFirstContiguousSeats(seats: SeatMatrix): ContiguousSeatsResult { //
   };
 }
 
+function setRoomFillLevel(seats: SeatMatrix, level: 1 | 2 | 3): string {
+  const totalRows = seats.length;
+  const totalCols = seats[0]?.length ?? 0;
+  const totalSeats = totalRows * totalCols;
+
+  if (totalSeats === 0) {
+    return "Error: la matriz seats esta vacia.";
+  }
+
+  let seatsToOccupy = 0;
+
+  if (level === 1) {
+    seatsToOccupy = Math.floor(totalSeats / 2);
+  } else if (level === 2) {
+    // Casi llena: dejamos 6 asientos libres.
+    seatsToOccupy = Math.max(0, totalSeats - 6);
+  } else {
+    seatsToOccupy = totalSeats;
+  }
+
+  let occupiedCount = 0;
+  for (let row = 0; row < totalRows; row += 1) {
+    for (let col = 0; col < totalCols; col += 1) {
+      seats[row][col] = occupiedCount < seatsToOccupy ? 1 : 0;
+      occupiedCount += 1;
+    }
+  }
+
+  if (level === 1) {
+    return "Sala configurada en modo 1: medio llena.";
+  }
+  if (level === 2) {
+    return "Sala configurada en modo 2: casi llena (6 libres).";
+  }
+  return "Sala configurada en modo 3: completa.";
+}
+
 
 (window as any).reserveSeat = reserveSeat;
 (window as any).countSeatStatus = countSeatStatus;
 (window as any).findFirstContiguousSeats = findFirstContiguousSeats;
 (window as any).displayRoomStatus = displayRoomStatus;
 (window as any).initializeSeatMatrix = initializeSeatMatrix;
+(window as any).setRoomFillLevel = setRoomFillLevel;
 
-console.log("Escribe seats = initializeSeatMatrix() en la consola para inicializar la matriz de asientos.");
+console.log("IMPORTANTE:Escribe seats = initializeSeatMatrix() en la consola para inicializar la matriz de asientos.");
 
 console.log("Usa la función reserveSeat(seats, <fila>, <columna>) para reservar un asiento.");
 
@@ -113,6 +151,7 @@ console.log("Usa la función displayRoomStatus(seats) para mostrar el estado act
 
 console.log("Usa la función countSeatStatus(seats) para contar el número de asientos ocupados, disponibles y el total de asientos.");
 console.log("Usa la función findFirstContiguousSeats(seats) para encontrar el primer par de asientos contiguos disponibles.");
+console.log("Usa setRoomFillLevel(seats, 1) para medio llena, setRoomFillLevel(seats, 2) para casi llena y setRoomFillLevel(seats, 3) para completa.");
 
 
 export {};
